@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+<h:head>
+    <title>StoreSync2</title>
+    <meta name="author" content="e-Strix Kamil Mucik" />
+    <meta name="description" content="" />
+    <meta name="KEYWORDS" content="" />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="revisit-after" content="7 days" />
+    <meta name="DISTRIBUTION" content="GLOBAL" />
+    <meta http-equiv="PRAGMA" content="NO-CACHE" />
+    <meta name="copyright" content="e-Strix Kamil Mucik" />
+
+<!--    <link rel="shortcut icon" type="image/x-icon" href="#{resource['favicon.ico']}"/>-->
+    <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/favicon.ico"/>
+
+    <h:outputStylesheet library="sh" name="css/shCore.css"/>
+    <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+    <h:outputScript library="sh" name="js/shCore.js" target="head" />
+
+    <style type="text/css">
+        .ui-layout-center {
+            z-index: none !important;
+        }
+        #layout-north {
+            z-index: 1 !important;
+        }
+        .ui-layout-north .ui-layout-unit-content {
+            overflow: visible !important;
+        }
+
+        body .ui-layout-resizer {
+            background-color: #fff !important;
+            display: none !important;
+        }
+
+
+    </style>
+
+</h:head>
+<h:body style="" >
+    <f:view>
+        <ui:param name="originalURL" value="#{request.requestURI}?#{request.queryString}" />
+
+        <f:metadata>
+            <f:event rendered="#{not sessionMB.loggedIn}" type="preRenderView" listener="#{sessionMB.recordOriginalURL(originalURL)}" />
+        </f:metadata>
+    </f:view>
+
+    <p:layout fullPage="true" style="">
+        <p:layoutUnit position="north" id="layout-north" >
+
+            <h:form>
+                <p:growl id="growl" life="2000" showDetail="true"  />
+                <p:menubar style="z-index: 999 !important;">
+                    <p:menuitem value="Pulpit" url="/secured/dashboard.html" />
+                    <p:submenu label="Zamówienia" icon="ui-icon-document">
+                    </p:submenu>
+                    <p:submenu label="Produkty" icon="ui-icon-document">
+                        <p:menuitem value="Produkty" url="/secured/product/product/index.html"  />
+                        <p:menuitem value="Oferty" url="/secured/product/offer/index.html"  />
+                    </p:submenu>
+                    <p:submenu label="Klienci" icon="ui-icon-document">
+                    </p:submenu>
+                    <p:submenu label="Ustawienia" icon="ui-icon-document">
+                        <p:menuitem value="Ogólne" url="/secured/settings/main/index.html" />
+                        <p:menuitem value="Magazyny" url="/secured/settings/stock/index.html" />
+                        <p:menuitem value="Sklepy" url="/secured/settings/shop/index.html" />
+                        <p:menuitem value="Allegro" url="/secured/settings/allegro/index.html" />
+                        <p:menuitem value="Użytkownicy" url="/secured/settings/user/index.html" />
+                    </p:submenu>
+
+                    <f:facet name="options">
+                        <p:commandButton
+                                value="Wyloguj"
+                                actionListener="#{sessionMB.logoutAction}"
+                                ajax="false"
+                                icon="ui-icon-extlink" />
+                    </f:facet>
+                </p:menubar>
+            </h:form>
+        </p:layoutUnit>
+
+        <p:layoutUnit position="center"  style="background-color: #eeeeee !important; ">
+            <ui:insert name="content"/>
+
+        </p:layoutUnit>
+
+        <p:layoutUnit position="south" id="layout-south" >
+            <span style="overflow: hidden; display: block; width: 100%; margin: 0px auto;">
+                <h:panelGrid columns="6" style="width: 50%; float: right" columnClasses="" >
+                    <h:outputText value="RAM:"/>
+                    <h:outputText value="#{systemBean.freeMemorySize} MB" />
+
+                    <h:outputText value="Wersja:"/>
+                    <h:outputText value="#{mainprop['estrix.application.version']}" />
+
+                    <h:outputText value="Zbudowano:"/>
+                    <h:outputText value="#{mainprop['estrix.application.biuld-time']}"/>
+                </h:panelGrid>
+            </span>
+        </p:layoutUnit>
+    </p:layout>
+</h:body>
+</html>

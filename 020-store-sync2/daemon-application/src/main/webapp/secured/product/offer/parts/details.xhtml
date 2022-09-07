@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+
+    <ui:composition>
+
+        <h:form id="details">
+            <p:panelGrid id="offerDisplay">
+<!--                <p:row>-->
+<!--                    <p:column >-->
+<!--                    </p:column>-->
+<!--                    <p:column >-->
+<!--                    </p:column>-->
+<!--                    <p:column >-->
+<!--                    </p:column>-->
+<!--                </p:row>-->
+                <p:row>
+                    <p:column colspan="3">
+
+                            <p:tree value="#{offerController.root}"
+                                    selectionMode="checkbox"
+                                    selection="#{offerController.selectedNodes2}"
+                                    id="categoriesTree"
+                                    style=""
+                                    dynamic="true"
+                                    cache="false"
+                                    var="doc">
+                                <p:treeNode >
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:ajax event="select" listener="#{offerController.refreshPriceToSend}" />
+                            </p:tree>
+
+
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column ><h:outputLabel for="price"  value="cena: " /></p:column>
+                    <p:column ><h:outputLabel for="margin"  value="marża: " /></p:column>
+                    <p:column ><h:outputLabel for="stock"  value="sztuk: " /></p:column>
+                </p:row>
+                <p:row>
+                    <p:column >
+                        <p:inputText id="price"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{offerController.selected.price}"
+                                     label="cena" >
+                            <p:ajax event="keyup" update="@([id$=margin])" listener="#{offerController.refreshPriceToSend}"/>
+                        </p:inputText>
+                    </p:column>
+                    <p:column >
+                        <p:inputText id="margin"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{offerController.selected.margin}"
+                                     label="marża" >
+                            <p:ajax event="keyup" update="@([id$=stock])" listener="#{offerController.refreshPriceToSend}"/>
+                        </p:inputText>
+                    </p:column>
+                    <p:column >
+                        <p:inputText id="stock"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{offerController.selected.stock}"
+                                     label="cena" >
+                            <p:ajax event="keyup" update="@([id$=price])" listener="#{offerController.refreshPriceToSend}"/>
+                        </p:inputText>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column >
+                    </p:column>
+                    <p:column >
+                        <p:commandButton value="Usuń"
+                                         actionListener="#{offerController.delete}"
+                                         partialSubmit="true"
+                                         ajax="true"
+                                         process="@this"
+                                         style="display: inline; margin: 0 auto 10px; width: 100%;"
+                                         update="@([id$=mainTable]) @([id$=growl]) " />
+                    </p:column>
+                    <p:column >
+                        <p:commandButton value="Wyślij"
+                                         actionListener="#{offerController.save}"
+                                         partialSubmit="true"
+                                         ajax="true"
+                                         process="@this"
+                                         style="display: inline; margin: 0 auto 10px; width: 100%;"
+                                         update="@([id$=mainTable]) @([id$=growl]) " />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </h:form>
+    </ui:composition>
+
+    </ui:define>
+</ui:composition>

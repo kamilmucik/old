@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+
+        <ui:composition>
+
+            <h:form id="details">
+                <p:panelGrid id="detailsDisplay" style="width:100%">
+                    <!--                <p:row>-->
+                    <!--                    <p:column >-->
+                    <!--                    </p:column>-->
+                    <!--                    <p:column >-->
+                    <!--                    </p:column>-->
+                    <!--                    <p:column >-->
+                    <!--                    </p:column>-->
+                    <!--                </p:row>-->
+                    <p:row>
+                        <p:column colspan="3">
+                            <h:outputLabel value="Nazwa: " />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="3">
+                            <h:outputLabel value="#{settingController.selected.name}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="3">
+                            <h:outputLabel value="Wartość: " />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="3">
+                            <p:inputText id="value"
+                                         style="width: 100%"
+                                         required="true"
+                                         requiredMessage="Pole jest wymagane."
+                                         value="#{settingController.selected.value}"
+                                         label="wartość" >
+                                <p:ajax event="keyup" listener="#{settingController.refreshPriceToSend}"/>
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column >
+                        </p:column>
+                        <p:column >
+                        </p:column>
+                        <p:column >
+                            <p:commandButton value="Zatwierdź"
+                                             actionListener="#{settingController.save}"
+                                             partialSubmit="true"
+                                             ajax="true"
+                                             process="@this"
+                                             style="display: inline; margin: 0 auto 10px; width: 100%;"
+                                             update="@([id$=mainTable]) @([id$=growl]) " />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:form>
+        </ui:composition>
+
+    </ui:define>
+</ui:composition>

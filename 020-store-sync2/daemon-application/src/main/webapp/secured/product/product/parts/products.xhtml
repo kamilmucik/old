@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+        <ui:composition>
+            <h:form id="form">
+                <p:dataTable var="product"
+                             id="mainTable"
+                             value="#{productProductController.lazyModel}"
+                             paginator="true"
+                             rowKey="#{product.id}"
+                             selectionMode="single"
+                             selection="#{productProductController.selected}"
+                             rows="5"
+                             widgetVar="dtVar"
+                             currentPageReportTemplate="{currentPage} z {totalPages}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15"
+                             lazy="true"
+                             paginatorPosition="bottom"
+                             first="#{productProductController.tablePageIndex}"
+                >
+                    <p:ajax event="page" listener="#{productProductController.onPage}" />
+                    <f:facet name="header">
+
+                        <h:outputText value="Produkty" style="font-size: xx-large; "/>
+
+                        <p:outputPanel id="tableSearch"
+                                       styleClass="tableSearch"
+                                       style="border-bottom: 8px solid transparent;"
+                        >
+                            <p:inputText id="tablePage"
+                                         value="#{productProductController.setPage}"
+                                         placeholder="Strona" />
+                            <p:commandButton actionListener="#{productProductController.switchPage}"
+                                             update="@([id$=mainTable])"
+                                             id="tablePageButton"
+                                             icon="pi pi-search"
+                                             title="Wyszukaj" />
+                            <p:inputText id="globalFilter"
+                                         value="#{productProductController.searchText}"
+                                         placeholder="Wyszukaj" />
+                            <p:commandButton actionListener="#{productProductController.search}"
+                                             update="@([id$=mainTable])"
+                                             id="searchButton"
+                                             icon="pi pi-search"
+                                             title="Wyszukaj" />
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:ajax event="rowSelect" listener="#{productProductController.onRowSelect}" update="@([id$=wooCommerceDialogDisplay]) @([id$=wooCommerceDisplay])" />
+<!--                    <p:ajax event="rowUnselect" listener="#{productProductController.onRowUnselect}" update="@([id$=wooCommerceDisplay])" />-->
+<!--                    <p:column headerText="" style="width:10%; text-align: center;">-->
+<!--                        <p:commandLink styleClass=""-->
+<!--                                       title="Sklep"-->
+<!--                                       action="#{productProductController.select(product.id)}"-->
+<!--                                       update="@([id$=wooCommerceDialogDisplay]) @([id$=wooCommerceDisplay])">-->
+<!--                            <h:graphicImage library="sh" name="img/edit.png" />-->
+<!--                        </p:commandLink>-->
+<!--                    </p:column>-->
+                    <p:column headerText="image" style="width: 10%; text-align: center;">
+                        <h:graphicImage value="#{product.mainThumb}" height="100px"/>
+                    </p:column>
+                    <p:column headerText="code" style="width: 10%; text-align: center;">
+                        <h:outputText value="KOD: " /><h:outputText value="#{product.code}" /><br/>
+                        <h:outputText value="Magazyn: " /><h:outputText value="#{product.stockId}" /><br/>
+                    </p:column>
+                    <p:column headerText="Name" style="width: 20%; text-align: center;">
+                        <h:outputText value="#{product.name}" />
+                    </p:column>
+                    <p:column headerText="Cena" style="width: 10%; text-align: center;">
+                        <h:outputText value="Netto: " /><h:outputText value="#{product.price}" /><br/>
+                        <h:outputText value="Brutto: " /><h:outputText value="#{product.priceBrutto}" /><br/>
+                        <h:outputText value="Resprzedaży: " /><h:outputText value="#{product.priceRetail}" />
+                    </p:column>
+                    <p:column headerText="Magazyn" style="width: 10%; text-align: center;">
+                        <h:outputText value="Aktywny: " /><h:outputText value="#{product.avail}" /><br/>
+                        <h:outputText value="Wewnetrzny: " /><h:outputText value="#{product.stock}" /><br/>
+                        <h:outputText value="Zewnętrzny: " /><h:outputText value="#{product.stockExt}" />
+                    </p:column>
+                </p:dataTable>
+                <h:outputText id="rows" value="#{datatableBean.rows}" />
+
+                <script>
+        jQuery(document).ready(function() {
+            dtVar.paginator.rppSelect.change(function() {
+                persistRows([{name: 'rows', value: this.value}]);
+            });
+        });
+    </script>
+
+            </h:form>
+
+            <p:dialog id="wooCommerceDialog"
+                      widgetVar="wooCommerceDialogW"
+                      header="Dodaj"
+                      modal="true"
+                      resizable="false"
+                      minHeight="200"
+                      appendTo="@(body)"
+                      width="400">
+                <h:form >
+                    <h:panelGrid columns="2" id="wooCommerceDialogDisplay" columnClasses="alignTop,alignTop"
+                                 style="display: block;width: 270px; border: 0px black solid;">
+
+                        <h:outputLabel for="name"  value="name: " />
+                        <p:inputText id="name"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{productProductController.selected.name}"
+                                     label="name" >
+                            <p:ajax event="blur" update="nameMsg" />
+                        </p:inputText>
+                        <h:outputText  />
+                        <p:message for="name" id="nameMsg" />
+
+
+
+                    </h:panelGrid>
+                    <p:separator />
+                    <p:commandButton value="OK"
+                                     actionListener="#{productProductController.save}"
+                                     partialSubmit="true"
+                                     ajax="true"
+                                     oncomplete="PF('wooCommerceDialogW').hide();"
+                                     process="@this"
+                                     style="display: inline; margin: 0 auto 10px; width: 100px;"
+                                     update="@([id$=mainTable])" />
+                </h:form>
+            </p:dialog>
+        </ui:composition>
+    </ui:define>
+</ui:composition>

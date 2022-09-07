@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+        <ui:composition>
+            <h:form id="form">
+                <p:dataTable var="setting"
+                             id="mainTable"
+                             value="#{settingController.lazyModel}"
+                             paginator="true"
+                             rowKey="#{setting.id}"
+                             selectionMode="single"
+                             selection="#{settingController.selected}"
+                             rows="5"
+                             currentPageReportTemplate="{currentPage} z {totalPages}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15"
+                             lazy="true"
+                             paginatorPosition="bottom"
+                >
+                    <f:facet name="header">
+                        <h:outputText value="Ustawienia" style="font-size: xx-large; "/>
+
+                        <p:outputPanel id="tableSearch"
+                                       styleClass="tableSearch"
+                                       style="border-bottom: 8px solid transparent;"
+                        >
+                            <p:inputText id="globalFilter"
+                                         value="#{settingController.searchText}"
+                                         placeholder="Wyszukaj" />
+                            <p:commandButton actionListener="#{settingController.search}"
+                                             update="@([id$=mainTable])"
+                                             id="searchButton"
+                                             icon="pi pi-search"
+                                             title="Wyszukaj" />
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:ajax event="rowSelect" listener="#{settingController.onRowSelect}" update="@([id$=details])" />
+                    <p:column headerText="Name" style="width: 40%; text-align: left;">
+                        <h:outputText value="#{setting.name}" />
+                    </p:column>
+                    <p:column headerText="Wartość" style=" width: 60%; text-align: left;">
+                        <h:outputText value="#{setting.value}" />
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+        </ui:composition>
+    </ui:define>
+</ui:composition>

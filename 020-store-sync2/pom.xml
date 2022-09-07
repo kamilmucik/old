@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.3.5.RELEASE</version>
+	</parent>
+
+	<groupId>pl.estrix</groupId>
+	<artifactId>store-sync2</artifactId>
+	<version>1.0.2-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Store Sync2</name>
+	<description>StoreSync2</description>
+
+	<developers>
+		<developer>
+			<id>kmucik</id>
+			<name>Kamil Mucik</name>
+			<email>k.mucik@e-strix.pl</email>
+			<url>http://www.e-strix.pl</url>
+			<organization>e-Strix Kamil Mucik</organization>
+			<organizationUrl>http://e-strix.pl</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>Europe/Warsaw</timezone>
+		</developer>
+	</developers>
+
+
+
+	<licenses>
+		<license>
+			<name>Public License 3.0</name>
+			<url>license.txt</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jsf-mojarra.version>2.2.11</jsf-mojarra.version>
+		<primefaces.version>7.0</primefaces.version>
+		<tomcat.version>8.0.30</tomcat.version>
+
+		<querydsl.version>3.7.0</querydsl.version>
+
+		<java.version>1.8</java.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<querydsl.version>3.7.0</querydsl.version>
+	</properties>
+
+
+	<modules>
+		<module>daemon-integration</module>
+		<module>daemon-application</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<mkdir dir="${project.build.directory}" />
+								<tstamp>
+									<format property="last.updated" pattern="yyyy.MM.dd HH:mm" />
+								</tstamp>
+								<echo file="${basedir}/target/classes/filter.properties" append="false" message="estrix.application.biuld-time=${last.updated}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="${line.separator}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="scm.commit=${buildNumber}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="${line.separator}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="scm.branch=${scmBranch}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="${line.separator}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="env.stage=${profile.stage}" />}" /&gt;
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="${line.separator}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="estrix.application.name=${project.name}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="${line.separator}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="estrix.application.version=${project.version}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="${line.separator}" />
+								<echo file="${basedir}/target/classes/filter.properties" append="true" message="estrix.application.desc=${project.description}" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.1</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.shared</groupId>
+						<artifactId>maven-invoker</artifactId>
+						<version>2.2</version>
+					</dependency>
+				</dependencies>
+<!--
+				<configuration>
+					<tagBase>
+						file:///C:/subversion_data/repos/my_repo/my-app-example/tags
+					</tagBase>
+				</configuration>
+-->
+			</plugin>
+		</plugins>
+		<filters>
+			<filter>${basedir}/target/classes/filter.properties</filter>
+		</filters>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>pl.estrix</groupId>
+				<artifactId>daemon-integration</artifactId>
+				<version>1.0.2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-daemon</groupId>
+				<artifactId>commons-daemon</artifactId>
+				<version>1.1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.winsw</groupId>
+				<artifactId>winsw</artifactId>
+				<version>1.18</version>
+				<classifier>bin</classifier>
+				<type>exe</type>
+				<scope>provided</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+<!--	<distributionManagement>-->
+		<!--<model>-->
+		<!--<uniqueVersion>false</uniqueVersion>-->
+		<!--<id>corp1</id>-->
+		<!--<name>Corporate Repository</name>-->
+		<!--<url>file:///c:/Users/TEST/.m2</url>-->
+		<!--<layout>default</layout>-->
+		<!--</model>-->
+<!--		<repository>-->
+<!--			<uniqueVersion>false</uniqueVersion>-->
+<!--			<id>corp2</id>-->
+<!--			<name>Corporate Repository</name>-->
+<!--			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>-->
+<!--			<layout>default</layout>-->
+<!--		</repository>-->
+<!--	</distributionManagement>-->
+
+<!--	<repositories>-->
+<!--		<repository>-->
+<!--			<id>jenkins</id>-->
+<!--			<name>Jenkins Repository</name>-->
+<!--			<url>http://repo.jenkins-ci.org/releases</url>-->
+<!--			<snapshots>-->
+<!--				<enabled>false</enabled>-->
+<!--			</snapshots>-->
+<!--		</repository>-->
+
+<!--	</repositories>-->
+<!--	<dependencyManagement> </dependencyManagement>-->
+<!--	<scm>-->
+<!--		<connection>scm:svn:http://svn.e-strix.com/svn/estrix-javafx/020-store-sync2/trunk</connection>-->
+<!--		<developerConnection>scm:svn:http://svn.e-strix.com/svn/estrix-javafx/020-store-sync2/trunk</developerConnection>-->
+<!--		<url>scm:svn:http://svn.e-strix.com/svn/estrix-javafx/020-store-sync2/trunk</url>-->
+<!--	</scm>-->
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>corp1</id>
+			<name>Corporate Repository</name>
+			<url>file:///c:/Users/kmuci/.m2</url>
+			<layout>default</layout>
+		</repository>
+	</distributionManagement>
+	<scm>
+		<connection>scm:svn:http://svn.e-strix.com/svn/estrix-javafx/020-store-sync2/trunk</connection>
+		<developerConnection>scm:svn:http://svn.e-strix.com/svn/estrix-javafx/020-store-sync2/trunk</developerConnection>
+		<url>scm:svn:http://svn.e-strix.com/svn/estrix-javafx/020-store-sync2/trunk</url>
+	</scm>
+</project>

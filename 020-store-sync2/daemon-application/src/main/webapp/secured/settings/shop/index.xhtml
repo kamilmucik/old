@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+        <h:form id="form-messages">
+            <p:messages id="messages" showDetail="true" escape="false" />
+        </h:form>
+        <div class="ui-g">
+            <div class="ui-g-3">
+                <ui:insert name="leftnav">
+                    <ui:include src="parts/yourFile.xhtml" />
+                </ui:insert>
+            </div>
+            <div class="ui-g-9">
+                <ui:insert name="rightnav">
+                    <ui:include src="parts/shops.xhtml" />
+                </ui:insert>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>

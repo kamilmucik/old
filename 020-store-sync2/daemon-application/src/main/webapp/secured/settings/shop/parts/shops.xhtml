@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+        <ui:composition>
+            <h:form id="form">
+                <p:poll interval="3" listener="#{shopController.increment}" update="mainTable" />
+
+                <p:dataTable var="shop"
+                             id="mainTable"
+                             value="#{shopController.lazyModel}"
+                             paginator="true"
+                             rows="5"
+                             currentPageReportTemplate="{currentPage} z {totalPages}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15"
+                             lazy="true"
+                             paginatorPosition="bottom"
+                >
+                    <f:facet name="header">
+                        <p:commandLink styleClass="tableAddButton"
+                                       title="Dodaj"
+                                       action="#{shopController.select(0)}"
+                                       update="@([id$=newItemDialogDisplay])"
+                                       oncomplete="PF('newItemDialogW').show();">
+                            <h:graphicImage library="sh" name="img/new.png" width="32" />
+                        </p:commandLink>
+                        <h:outputText value="Sklepy" style="font-size: xx-large; "/>
+
+                        <p:outputPanel id="tableSearch"
+                                       styleClass="tableSearch"
+                                       style="border-bottom: 8px solid transparent;"
+                        >
+                            <p:inputText id="globalFilter"
+                                         value="#{shopController.searchText}"
+                                         placeholder="Wyszukaj" />
+                            <p:commandButton actionListener="#{shopController.search}"
+                                             update="@([id$=mainTable])"
+                                             id="searchButton"
+                                             icon="pi pi-search"
+                                             title="Wyszukaj" />
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="Name" style="width: 50%; text-align: center;">
+                        <h:outputText value="#{shop.name}" />
+                    </p:column>
+                    <p:column headerText="Ost. akt." style=" width: 10%; text-align: center;">
+                        <h:outputText value="#{shop.lastUpdated}" />
+                    </p:column>
+                    <p:column headerText="Status" style="width: 10%; text-align: center;">
+                        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{shop.status}" labelTemplate="{shop.status}%" styleClass="animated" global="false"/>
+                    </p:column>
+
+                    <p:column headerText="" style="width:10%; text-align: center;">
+                        <p:commandLink styleClass=""
+                                       ajax="false"
+                                       title="Odśwież"
+                                       action="#{shopController.loadProgress(shop.id)}"
+                                       update="@([id$=mainTable])">
+                            <h:graphicImage library="sh" name="img/update.png" />
+                        </p:commandLink>
+                        <p:commandLink styleClass=""
+                                       title="Edycja"
+                                       action="#{shopController.select(shop.id)}"
+                                       update="@([id$=newItemDialogDisplay])"
+                                       oncomplete="PF('newItemDialogW').show();">
+                            <h:graphicImage library="sh" name="img/edit.png" />
+                        </p:commandLink>
+                        <p:commandLink styleClass=""
+                                       title="Usuń"
+                                       action="#{shopController.select(shop.id)}"
+                                       update="@([id$=display])"
+                                       oncomplete="PF('deleteDialogW').show();">
+                            <h:graphicImage library="sh" name="img/delete.png" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+
+            </h:form>
+            <p:dialog id="newItemDialog"
+                      widgetVar="newItemDialogW"
+                      header="Dodaj"
+                      modal="true"
+                      resizable="false"
+                      minHeight="200"
+                      appendTo="@(body)"
+                      width="400">
+                <h:form >
+                    <h:panelGrid columns="2" id="newItemDialogDisplay" columnClasses="alignTop,alignTop"
+                                 style="display: block;width: 270px; border: 0px black solid;">
+
+                        <h:outputLabel for="name"  value="name: " />
+                        <p:inputText id="name"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{shopController.selected.name}"
+                                     label="name" >
+                            <p:ajax event="blur" update="nameMsg" />
+                        </p:inputText>
+                        <h:outputText  />
+                        <p:message for="name" id="nameMsg" />
+
+                        <h:outputLabel for="url"  value="url: " />
+                        <p:inputText id="url"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{shopController.selected.url}"
+                                     label="url" >
+                            <p:ajax event="blur" update="urlMsg" />
+                        </p:inputText>
+                        <h:outputText  />
+                        <p:message for="url" id="urlMsg" />
+
+                        <h:outputLabel for="apiUrl"  value="apiUrl: " />
+                        <p:inputText id="apiUrl"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{shopController.selected.apiUrl}"
+                                     label="apiUrl" >
+                            <p:ajax event="blur" update="apiUrlMsg" />
+                        </p:inputText>
+                        <h:outputText  />
+                        <p:message for="apiUrl" id="apiUrlMsg" />
+
+                        <h:outputLabel for="consumerKey"  value="Klucz klienta: " />
+                        <p:inputText id="consumerKey"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{shopController.selected.consumerKey}"
+                                     label="consumerKey" >
+                            <p:ajax event="blur" update="consumerKeyMsg" />
+                        </p:inputText>
+                        <h:outputText  />
+                        <p:message for="consumerKey" id="consumerKeyMsg" />
+
+                        <h:outputLabel for="consumerSecret"  value="Klucz prywatny: " />
+                        <p:inputText id="consumerSecret"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{shopController.selected.consumerSecret}"
+                                     label="consumerSecret" >
+                            <p:ajax event="blur" update="consumerSecretMsg" />
+                        </p:inputText>
+                        <h:outputText  />
+                        <p:message for="consumerSecret" id="consumerSecretMsg" />
+
+                    </h:panelGrid>
+                    <p:separator />
+                    <p:commandButton value="OK"
+                                     actionListener="#{shopController.save}"
+                                     partialSubmit="true"
+                                     ajax="true"
+                                     oncomplete="PF('newItemDialogW').hide();"
+                                     process="@this"
+                                     style="display: inline; margin: 0 auto 10px; width: 100px;"
+                                     update="@([id$=mainTable])" />
+                </h:form>
+            </p:dialog>
+        </ui:composition>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+        <ui:composition>
+            <h:form id="form">
+                <p:poll interval="1" update="jobDoneText" />
+                <h:outputText id="jobDoneText" rendered="#{stockController.jobDone}" value="Job finished"/>
+                <p:dataTable var="stock"
+                             id="stockTable"
+                             value="#{stockController.lazyModel}"
+                             paginator="true"
+                             rows="5"
+                             currentPageReportTemplate="{currentPage} z {totalPages}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15"
+                             lazy="true"
+                             paginatorPosition="bottom"
+                >
+                    <f:facet name="header">
+                        <p:commandLink styleClass="tableAddButton"
+                                title="Dodaj"
+                                action="#{stockController.select(0)}"
+                                update="@([id$=newItemDialogDisplay])"
+                                oncomplete="PF('newItemDialogW').show();">
+                            <h:graphicImage library="sh" name="img/new.png" width="32" />
+                        </p:commandLink>
+                        <h:outputText value="Magazyny" style="font-size: xx-large; "/>
+
+                        <p:outputPanel id="tableSearch"
+                                       styleClass="tableSearch"
+                                       style="border-bottom: 8px solid transparent;"
+                        >
+                            <p:inputText id="globalFilter"
+                                         value="#{stockController.searchText}"
+                                         placeholder="Wyszukaj" />
+                            <p:commandButton actionListener="#{stockController.search}"
+                                             update="@([id$=stockTable])"
+                                             id="searchButton"
+                                             icon="pi pi-search"
+                                             title="Wyszukaj" />
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="Name" style="width: 50%; text-align: center;">
+                        <h:outputText value="#{stock.name}" />
+                    </p:column>
+                    <p:column headerText="Produkty" style=" width: 10%; text-align: center;">
+                        <h:outputText value="#{stock.productCounter}" />
+                    </p:column>
+                    <p:column headerText="Ost. akt." style=" width: 10%; text-align: center;">
+                        <h:outputText value="#{stock.lastUpdate}" />
+                    </p:column>
+                    <p:column headerText="Aktualizacja" style=" width: 10%; text-align: center;">
+                        <h:outputText value="#{stock.updateHour}" />
+                    </p:column>
+
+                    <p:column headerText="Status" style="width: 10%; text-align: center;">
+                        <p:progressBar widgetVar="pbAjax" ajax="true" value="#{stock.status}" labelTemplate="{stock.status}%" styleClass="animated" global="false"/>
+                    </p:column>
+                    <p:column headerText="" style="width:20%; text-align: center;">
+
+                        <p:commandLink styleClass=""
+                                       title="Aktualizacja"
+                                       action="#{stockController.loadProgress(stock.id)}"
+                                       update="@([id$=newItemDialogDisplay])">
+                            <h:graphicImage library="sh" name="img/update.png" />
+                        </p:commandLink>
+                        <p:commandLink styleClass=""
+                                       title="Edycja"
+                                       action="#{stockController.select(stock.id)}"
+                                       update="@([id$=newItemDialogDisplay])"
+                                       oncomplete="PF('newItemDialogW').show();">
+                            <h:graphicImage library="sh" name="img/edit.png" />
+                        </p:commandLink>
+                        <p:commandLink styleClass=""
+                                       title="Usuń"
+                                       action="#{stockController.select(stock.id)}"
+                                       update="@([id$=display])"
+                                       oncomplete="PF('deleteDialogW').show();">
+                            <h:graphicImage library="sh" name="img/delete.png" />
+                        </p:commandLink>
+                        <p:commandLink styleClass=""
+                                       title="Wyślij do sklepu"
+                                       action="#{stockController.sendAllProductToShop(stock.id)}">
+                            <h:graphicImage library="sh" name="img/update.png" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+
+                <p:dialog id="deleteDialog"
+                          widgetVar="deleteDialogW"
+                          header="Usuń"
+                          modal="true"
+                          resizable="false"
+                          minHeight="200"
+                          appendTo="@(body)"
+                          width="400">
+                    <h:panelGrid columns="3" id="display" columnClasses="alignTop,alignTop,alignTop"
+                                 style="display: block;width: 270px; border: 0px black solid;">
+                        <h:outputLabel value="Czy usunąć '" />
+                        <h:outputLabel value="#{stockController.selected.name}" />
+                        <h:outputLabel value="'?" />
+                    </h:panelGrid>
+                    <p:separator />
+                    <p:commandButton value="OK"
+                                     actionListener="#{stockController.delete}"
+                                     partialSubmit="true"
+                                     ajax="true"
+                                     oncomplete="PF('deleteDialogW').hide();"
+                                     process="@this"
+                                     style="display: inline; margin: 0 auto 10px; width: 100px;"
+                                     update="@([id$=stockTable])" />
+                </p:dialog>
+
+                <p:dialog id="sendToStoreDialog"
+                          widgetVar="sendToStoreDialogW"
+                          header="Wyślij do sklepu"
+                          modal="true"
+                          resizable="false"
+                          minHeight="200"
+                          appendTo="@(body)"
+                          width="400">
+                    <h:panelGrid columns="3" id="display2" columnClasses="alignTop,alignTop,alignTop"
+                                 style="display: block;width: 270px; border: 0px black solid;">
+
+                        <h:outputLabel value="Czy usunąć '" />
+                        <h:outputLabel value="'?" />
+
+                    </h:panelGrid>
+                    <p:separator />
+                    <p:commandButton value="OK"
+                                     actionListener="#{stockController.sendAllProductToShop}"
+                                     partialSubmit="true"
+                                     ajax="true"
+                                     oncomplete="PF('sendToStoreDialogW').hide();"
+                                     process="@this"
+                                     style="display: inline; margin: 0 auto 10px; width: 100px;"
+                                     update="@([id$=stockTable])" />
+                </p:dialog>
+            </h:form>
+                <p:dialog id="newItemDialog"
+                          widgetVar="newItemDialogW"
+                          header="Dodaj"
+                          modal="true"
+                          resizable="false"
+                          minHeight="200"
+                          appendTo="@(body)"
+                          width="400">
+                    <h:form >
+                        <h:panelGrid columns="2" id="newItemDialogDisplay" columnClasses="alignTop,alignTop"
+                                     style="display: block;width: 270px; border: 0px black solid;">
+
+                            <h:outputLabel for="name"  value="name: " />
+                            <p:inputText id="name"
+                                         style="width: 100%"
+                                         required="true"
+                                         requiredMessage="Pole jest wymagane."
+                                         value="#{stockController.selected.name}"
+                                         label="name" >
+                                <p:ajax event="blur" update="nameMsg" />
+                            </p:inputText>
+                            <h:outputText  />
+                            <p:message for="name" id="nameMsg" />
+
+                            <h:outputLabel for="updateHour"  value="updateHour: " />
+                            <p:inputText id="updateHour"
+                                         style="width: 100%"
+                                         required="true"
+                                         requiredMessage="Pole jest wymagane."
+                                         value="#{stockController.selected.updateHour}"
+                                         label="updateHour" >
+                                <p:ajax event="blur" update="updateHourMsg" />
+                            </p:inputText>
+                            <h:outputText  />
+                            <p:message for="updateHour" id="updateHourMsg" />
+
+                            <h:outputLabel for="url"  value="url: " />
+                            <p:inputText id="url"
+                                         style="width: 100%"
+                                         required="true"
+                                         requiredMessage="Pole jest wymagane."
+                                         value="#{stockController.selected.url}"
+                                         label="url" >
+                                <p:ajax event="blur" update="urlMsg" />
+                            </p:inputText>
+                            <h:outputText  />
+                            <p:message for="url" id="urlMsg" />
+
+                            <h:outputLabel for="apiUrl"  value="apiUrl: " />
+                            <p:inputText id="apiUrl"
+                                         style="width: 100%"
+                                         required="true"
+                                         requiredMessage="Pole jest wymagane."
+                                         value="#{stockController.selected.apiUrl}"
+                                         label="url" >
+                                <p:ajax event="blur" update="apiUrlMsg" />
+                            </p:inputText>
+                            <h:outputText  />
+                            <p:message for="apiUrl" id="apiUrlMsg" />
+
+                            <h:outputLabel for="siteScratch"  value="siteScratch: " />
+                            <p:toggleSwitch id="siteScratch" value="#{stockController.selected.siteScratch}" >
+                                <p:ajax listener="#{stockController.fakeListener}" />
+                            </p:toggleSwitch>
+                            <h:outputText  />
+                            <p:message for="siteScratch" id="siteScratchMsg" />
+
+
+                        </h:panelGrid>
+                        <p:separator />
+                        <p:commandButton value="OK"
+                                         actionListener="#{stockController.save}"
+                                         partialSubmit="true"
+                                         ajax="true"
+                                         oncomplete="PF('newItemDialogW').hide();"
+                                         process="@this"
+                                         style="display: inline; margin: 0 auto 10px; width: 100px;"
+                                         update="@([id$=stockTable])" />
+                    </h:form>
+                </p:dialog>
+
+
+
+
+        </ui:composition>
+    </ui:define>
+</ui:composition>

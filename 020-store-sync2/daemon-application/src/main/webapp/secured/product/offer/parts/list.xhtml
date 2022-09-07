@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+
+    <ui:composition>
+
+        <h:form id="form">
+            <p:dataTable var="offer"
+                         id="mainTable"
+                         value="#{offerController.lazyModel}"
+                         paginator="true"
+                         rowKey="#{offer.id}"
+                         selectionMode="single"
+                         selection="#{offerController.selected}"
+                         rows="5"
+                         currentPageReportTemplate="{currentPage} z {totalPages}"
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15"
+                         lazy="true"
+                         paginatorPosition="bottom"
+            >
+                <f:facet name="header">
+
+                    <h:outputText value="Oferty" style="font-size: xx-large; "/>
+
+                    <p:outputPanel id="tableSearch"
+                                   styleClass="tableSearch"
+                                   style="border-bottom: 8px solid transparent;"
+                    >
+                        <p:inputText id="globalFilter"
+                                     value="#{offerController.searchText}"
+                                     placeholder="Wyszukaj" />
+                        <p:commandButton actionListener="#{offerController.search}"
+                                         update="@([id$=productTable])"
+                                         id="searchButton"
+                                         icon="pi pi-search"
+                                         title="Wyszukaj" />
+                    </p:outputPanel>
+                </f:facet>
+                <p:ajax event="rowSelect" listener="#{offerController.onRowSelect}" update="@([id$=wooCommerceDialogDisplay]) @([id$=offerDisplay])" />
+                <p:column headerText="image" style="width: 10%; text-align: center;">
+                    <h:graphicImage value="#{offer.image}" height="100px"/>
+                </p:column>
+                <p:column headerText="Info" style="width: 5%; text-align: center;">
+                    <h:outputText value="Marża: " /><h:outputText value="#{offer.margin}" /><br/>
+                    <h:outputText value="Magazyn: " /><h:outputText value="#{offer.stock}" /><br/>
+                    <h:outputText value="Cena: " /><h:outputText value="#{offer.price}" />
+
+                </p:column>
+                <p:column headerText="permalink" style="width: 5%; text-align: center;">
+                    <h:outputLink target="_blank" value="#{offer.permalink}" rendered="#{offer.processed eq true}" >
+                        <h:graphicImage library="sh" name="img/shop-icon.png" />
+                    </h:outputLink>
+                    <h:graphicImage library="sh" name="img/indicator.gif"  rendered="#{offer.processed eq false}"/>
+
+                </p:column>
+                <p:column headerText="Kod" style="width: 5%; text-align: center;">
+                    <h:outputText value="#{offer.code}" /><br/>
+                </p:column>
+                <p:column headerText="Kod" style="width: 5%; text-align: center;">
+                    <p:commandLink styleClass=""
+                                   title="Usuń"
+                                   action="#{offerController.select(offer.id)}"
+                                   update="@([id$=display])"
+                                   oncomplete="PF('deleteDialogW').show();">
+                        <h:graphicImage library="sh" name="img/delete.png" />
+                    </p:commandLink>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:dialog id="deleteDialog"
+                      widgetVar="deleteDialogW"
+                      header="Usuń"
+                      modal="true"
+                      resizable="false"
+                      minHeight="200"
+                      appendTo="@(body)"
+                      width="400">
+                <h:panelGrid columns="3" id="display" columnClasses="alignTop,alignTop,alignTop"
+                             style="display: block;width: 270px; border: 0px black solid;">
+                    <h:outputLabel value="Czy usunąć '" />
+                    <h:outputLabel value="#{offerController.selected.code}" />
+                    <h:outputLabel value="'?" />
+                </h:panelGrid>
+                <p:separator />
+                <p:commandButton value="OK"
+                                 actionListener="#{offerController.delete}"
+                                 partialSubmit="true"
+                                 ajax="true"
+                                 oncomplete="PF('deleteDialogW').hide();"
+                                 process="@this"
+                                 style="display: inline; margin: 0 auto 10px; width: 100px;"
+                                 update="@([id$=mainTable])" />
+            </p:dialog>
+        </h:form>
+    </ui:composition>
+
+    </ui:define>
+</ui:composition>

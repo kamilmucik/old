@@ -1,0 +1,3 @@
+mvn install:install-file -Dfile=rewrite-servlet-3.4.4.Final.jar -DgroupId=org.ocpsoft.rewrite -DartifactId=rewrite-servlet -Dversion=3.4.4.Final -Dpackaging=jar
+mvn install:install-file -Dfile=rewrite-integration-faces-3.4.4.Final.jar -DgroupId=org.ocpsoft.rewrite -DartifactId=rewrite-integration-faces -Dversion=3.4.4.Final -Dpackaging=jar
+mvn install:install-file -Dfile=rewrite-config-prettyfaces-3.4.4.Final.jar -DgroupId=org.ocpsoft.rewrite -DartifactId=rewrite-config-prettyfaces -Dversion=3.4.4.Final -Dpackaging=jar

@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+
+    <ui:composition>
+        <p:tabView>
+            <p:tab title="Szukaj">
+                <h:form>
+                    <p:panelGrid id="searchDisplay">
+                        <p:row>
+                            <p:column >
+                                <p:outputLabel  value="" />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:commandButton value="Szukaj"
+                                                 actionListener="#{productProductController.search}"
+                                                 partialSubmit="true"
+                                                 ajax="true"
+                                                 process="@this"
+                                                 style="display: inline; margin: 0 auto 10px; width: 100%;"
+                                                 update="@([id$=mainTable]) @([id$=growl]) " />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:selectOneMenu id="stocks" value="#{productProductController.selectedStock}"  style="width:100%">
+                                    <p:ajax listener="#{productProductController.handleChange2}" update="@([id$=selectedItemText]) @([id$=node])" />
+                                    <f:selectItem itemLabel="Wybierz" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{productProductController.stocks}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column ><h:outputLabel value="Przedział cenowy: " /></p:column>
+                            <p:column >
+                                <p:inputText id="value1"
+                                                    style="width: 100%"
+                                                    required="true"
+                                                    requiredMessage="Pole jest wymagane."
+                                                    value="#{productProductController.stockProductSearchCriteriaDto.priceFrom}"
+                                                    label="wartość" >
+                                    <p:ajax event="keyup" listener="#{settingController.refreshPriceToSend}"/>
+                                </p:inputText>
+                            </p:column>
+                            <p:column >
+                                <p:inputText id="value2"
+                                             style="width: 100%"
+                                             required="true"
+                                             requiredMessage="Pole jest wymagane."
+                                             value="#{productProductController.stockProductSearchCriteriaDto.priceTo}"
+                                             label="wartość" >
+                                    <p:ajax event="keyup" listener="#{settingController.refreshPriceToSend}"/>
+                                </p:inputText>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column ><h:outputLabel value="Przedział ilosci: " /></p:column>
+                            <p:column >
+                                <p:inputText id="value3"
+                                             style="width: 100%"
+                                             required="true"
+                                             requiredMessage="Pole jest wymagane."
+                                             value="#{productProductController.stockProductSearchCriteriaDto.stockFrom}"
+                                             label="wartość" >
+                                    <p:ajax event="keyup" listener="#{settingController.refreshPriceToSend}"/>
+                                </p:inputText>
+                            </p:column>
+                            <p:column >
+                                <p:inputText id="value4"
+                                             style="width: 100%"
+                                             required="true"
+                                             requiredMessage="Pole jest wymagane."
+                                             value="#{productProductController.stockProductSearchCriteriaDto.stockTo}"
+                                             label="wartość" >
+                                    <p:ajax event="keyup" listener="#{settingController.refreshPriceToSend}"/>
+                                </p:inputText>
+                            </p:column>
+                        </p:row>
+
+                    </p:panelGrid>
+                </h:form>
+            </p:tab>
+            <p:tab title="Allegro">
+                <h:panelGrid columns="2" cellpadding="10">
+                    <h:outputText value="Allegro, olx, Facebook" />
+                </h:panelGrid>
+            </p:tab>
+            <p:tab title="Sklepy">
+                <h:form>
+                    <p:panelGrid id="wooCommerceDisplay">
+                        <p:row>
+                            <p:column >
+                                <p:outputLabel for="shops" value="Sklepy: " />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:commandButton value="Wyślij"
+                                                 actionListener="#{productProductController.shopSendProduct}"
+                                                 partialSubmit="true"
+                                                 ajax="true"
+                                                 process="@this"
+                                                 style="display: inline; margin: 0 auto 10px; width: 100%;"
+                                                 update="@([id$=mainTable]) @([id$=growl]) " />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:selectOneMenu id="shops" value="#{productProductController.selectedShop}"  style="width:100%">
+                                    <p:ajax listener="#{productProductController.handleChange}" update="@([id$=selectedItemText]) @([id$=node])" />
+                                    <f:selectItem itemLabel="Wybierz" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{productProductController.shops}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:tree value="#{productProductController.root}"
+                                        selectionMode="checkbox"
+                                        selection="#{productProductController.selectedNodes2}"
+                                        id="node"
+                                        style="width:100%"
+                                        cache="false"
+                                        var="doc"
+                                        dynamic="true">
+                                    <p:treeNode >
+                                        <h:outputText value="#{doc.name}"/>
+                                    </p:treeNode>
+
+                                </p:tree>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column ><h:outputLabel for="sugestprice"  value="cena sugerowana: " /></p:column>
+                            <p:column ><h:outputLabel for="margin"  value="marża: " /></p:column>
+                            <p:column ><h:outputLabel for="price"  value="cena: " /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column >
+                                <p:inputText id="sugestprice"
+                                                    style="width: 100%"
+                                                    required="true"
+                                                    requiredMessage="Pole jest wymagane."
+                                                    value="#{productProductController.selected.priceRetail}"
+                                                    label="cena" >
+                                </p:inputText>
+                            </p:column>
+                            <p:column >
+                                <p:inputText id="margin"
+                                                    style="width: 100%"
+                                                    required="true"
+                                                    requiredMessage="Pole jest wymagane."
+                                                    value="#{productProductController.marginPrice}"
+                                                    label="marża" >
+                                    <p:ajax event="keyup" update="@([id$=price])" listener="#{productProductController.refreshPriceToSend}"/>
+                                </p:inputText>
+                            </p:column>
+                            <p:column >
+                                <p:inputText id="price"
+                                             style="width: 100%"
+                                             required="true"
+                                             requiredMessage="Pole jest wymagane."
+                                             value="#{productProductController.priceToSend}"
+                                             label="cena" >
+                                </p:inputText>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column >
+                                <h:outputLabel for="count"  value="wew: " />
+                            </p:column>
+                            <p:column >
+                                <h:outputLabel for="countExt"  value="zew: " />
+                            </p:column>
+                            <p:column >
+                                <h:outputLabel for="countShop"  value="Ilość do skepu: " />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column >
+                                <p:inputText id="count"
+                                             style="width: 100%"
+                                             required="true"
+                                             requiredMessage="Pole jest wymagane."
+                                             value="#{productProductController.selected.stock}"
+                                             label="ilosc" >
+                                </p:inputText>
+                            </p:column>
+                            <p:column >
+                                <p:inputText id="countExt"
+                                             style="width: 100%"
+                                             required="true"
+                                             requiredMessage="Pole jest wymagane."
+                                             value="#{productProductController.selected.stockExt}"
+                                             label="ilosc" >
+                                </p:inputText>
+                            </p:column>
+                            <p:column >
+                                <p:inputText id="countShop"
+                                             style="width: 100%"
+                                             required="true"
+                                             requiredMessage="Pole jest wymagane."
+                                             value="#{productProductController.stockToSend}"
+                                             label="ilosc" >
+                                </p:inputText>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:textEditor widgetVar="editor2" value="#{productProductController.selected.description}" height="200" style="" placeholder="Enter your content">
+                                    <f:facet name="toolbar">
+                                     <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                                                <span class="ql-formats">
+                                        <select class="ql-font"></select>
+                                        <select class="ql-size"></select>
+                                    </span>
+                                    </f:facet>
+                                </p:textEditor>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </h:form>
+            </p:tab>
+        </p:tabView>
+    </ui:composition>
+    </ui:define>
+</ui:composition>

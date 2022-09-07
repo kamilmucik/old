@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+    <ui:define name="content">
+        <h:form id="form-messages">
+            <h:outputScript library="sh" name="js/shCore.js" target="head" />
+            <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+            <h:outputStylesheet library="sh" name="css/shCore.css"/>
+            <p:messages id="messages" showDetail="true" escape="false" />
+        </h:form>
+
+        <div class="ui-g">
+            <div class="ui-g-6">
+                <div class="ui-g">
+                    <div class="ui-g-12">
+                        dfg
+                    </div>
+                    <div class="ui-g-12">
+                        asd
+                    </div>
+                </div>
+            </div>
+            <div class="ui-g-6">
+                <div class="ui-g">
+                    <div class="ui-g-12">
+
+                        <ui:insert >
+                            <ui:include src="dashboard/events.xhtml" />
+                        </ui:insert>
+                    </div>
+                    <div class="ui-g-12">
+                        asd
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    </ui:define>
+
+
+
+
+</ui:composition>

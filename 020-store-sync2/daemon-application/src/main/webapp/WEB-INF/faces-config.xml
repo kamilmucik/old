@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+       http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
+              version="2.2">
+
+    <factory>
+        <exception-handler-factory>
+            pl.estrix.app.CustomExceptionHandlerFactory
+        </exception-handler-factory>
+    </factory>
+
+    <application>
+        <el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver</el-resolver>
+        <resource-bundle>
+            <base-name>filter</base-name>
+            <var>mainprop</var>
+        </resource-bundle>
+    </application>
+
+    <lifecycle>
+        <phase-listener>org.springframework.web.jsf.DelegatingPhaseListenerMulticaster</phase-listener>
+    </lifecycle>
+
+    <converter>
+        <converter-id>themeConverter</converter-id>
+        <converter-class>pl.estrix.app.frontend.converter.ThemeConverter</converter-class>
+    </converter>
+    <converter>
+        <converter-id>accountConverter</converter-id>
+        <converter-class>pl.estrix.panel.frontend.converter.AccountConverter</converter-class>
+    </converter>
+
+    <converter>
+        <converter-id>paymentCycleConverter</converter-id>
+        <converter-class>pl.estrix.panel.frontend.converter.PaymentCycleConverter</converter-class>
+    </converter>
+
+    <navigation-rule>
+        <display-name>login.xhtml</display-name>
+        <from-view-id>/login.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>dashboard</from-outcome>
+            <to-view-id>/secured/dashboard.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <display-name>secured/dashboard.xhtml</display-name>
+        <from-view-id>/secured/dashboard.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>payment_details</from-outcome>
+            <to-view-id>/secured/payment/payment_details.xhtml</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+        <!--<navigation-case>-->
+        <!--<from-outcome>new</from-outcome>-->
+        <!--<to-view-id>/secured/shipment/new.xhtml</to-view-id>-->
+        <!--<redirect></redirect>-->
+        <!--</navigation-case>-->
+    </navigation-rule>
+
+    <navigation-rule>
+        <display-name>secured/settings/user/index.xhtml</display-name>
+        <from-view-id>/secured/settings/user/index.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>details</from-outcome>
+            <to-view-id>/secured/settings/user/details.xhtml</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>password</from-outcome>
+            <to-view-id>/secured/settings/user/change_password.xhtml</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>new</from-outcome>
+            <to-view-id>/secured/settings/user/new.xhtml</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <display-name>secured/settings/user/details.xhtml</display-name>
+        <from-view-id>/secured/settings/user/details.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>saveAndOut</from-outcome>
+            <to-view-id>/secured/settings/user/index.xhtml</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>cancel</from-outcome>
+            <to-view-id>/secured/settings/user/index.xhtml</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <display-name>secured/settings/user/change_password.xhtml</display-name>
+        <from-view-id>/secured/settings/user/change_password.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>saveAndOut</from-outcome>
+            <to-view-id>/secured/settings/user/index.xhtml</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>cancel</from-outcome>
+            <to-view-id>/secured/settings/user/index.xhtml</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+
+
+</faces-config>

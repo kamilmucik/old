@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+
+    <ui:composition>
+
+        <p>Produkty</p>
+
+        <h:form>
+            <p:panelGrid id="wooCommerceDisplay">
+                <p:row>
+                    <p:column >
+                        <p:outputLabel for="shops" value="Sklepy: " />
+                    </p:column>
+                    <p:column colspan="2">
+                        <p:commandButton value="Wyślij"
+                                         actionListener="#{stockController.shopSendProduct}"
+                                         partialSubmit="true"
+                                         ajax="true"
+                                         process="@this"
+                                         style="display: inline; margin: 0 auto 10px; width: 100%;"
+                                         update="@([id$=mainTable]) @([id$=growl]) " />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="3">
+                        <p:selectOneMenu id="shops" value="#{stockController.selectedShop}"  style="width:100%">
+                            <p:ajax listener="#{stockController.handleChange}" update="@([id$=selectedItemText]) @([id$=node])" />
+                            <f:selectItem itemLabel="Wybierz" itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{stockController.shops}" />
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="3">
+                        <p:tree value="#{stockController.root}"
+                                selectionMode="checkbox"
+                                selection="#{stockController.selectedNodes2}"
+                                id="node"
+                                style="width:100%"
+                                cache="false"
+                                var="doc"
+                                dynamic="true">
+                            <p:treeNode >
+                                <h:outputText value="#{doc.name}"/>
+                            </p:treeNode>
+
+                        </p:tree>
+                    </p:column>
+                </p:row>
+
+
+            </p:panelGrid>
+        </h:form>
+    </ui:composition>
+
+    </ui:define>
+</ui:composition>

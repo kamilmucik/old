@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/layout/basicLayout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="content">
+        <ui:composition>
+            <h:form id="form">
+                <p:dataTable var="account"
+                             id="mainTable"
+                             value="#{allegroController.lazyModel}"
+                             paginator="true"
+                             rows="5"
+                             currentPageReportTemplate="{currentPage} z {totalPages}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15"
+                             lazy="true"
+                             paginatorPosition="bottom"
+                >
+                    <f:facet name="header">
+                        <p:commandLink
+                                       title="Dodaj"
+                                       styleClass="tableAddButton"
+                                       action="#{allegroController.onConnectAccountAction}"
+                                       onclick="window.open('#{allegroController.connectAccount()}')"
+                                       immediate="true" >
+
+                            <h:graphicImage library="sh" name="img/new.png" width="32" />
+                        </p:commandLink>
+
+
+                        <h:outputText value="Konta allegro" style="font-size: xx-large; "/>
+
+                        <p:outputPanel id="tableSearch"
+                                       styleClass="tableSearch"
+                                       style="border-bottom: 8px solid transparent;"
+                        >
+                            <p:inputText id="globalFilter"
+                                         value="#{allegroController.searchText}"
+                                         placeholder="Wyszukaj" />
+                            <p:commandButton actionListener="#{allegroController.search}"
+                                             update="@([id$=mainTable])"
+                                             id="searchButton"
+                                             icon="pi pi-search"
+                                             title="Wyszukaj" />
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="Name" style="width: 50%; text-align: center;">
+                        <h:outputText value="#{account.name}" />
+                    </p:column>
+                    <p:column headerText="Ost. akt." style=" width: 10%; text-align: center;">
+                        <h:outputText value="#{account.lastUpdated}" />
+                    </p:column>
+
+                    <p:column headerText="" style="width:10%; text-align: center;">
+
+                        <p:commandLink styleClass=""
+                                       title="Refresh Token"
+                                       action="#{allegroController.refreshToken(account.id)}"
+                                       update="@([id$=detailsDisplay])">
+                            <h:graphicImage library="sh" name="img/update.png" />
+                        </p:commandLink>
+                        <p:commandLink styleClass=""
+                                       title="Get Offer"
+                                       action="#{allegroController.getOffer(account.id)}"
+                                       update="@([id$=detailsDisplay])">
+                            <h:graphicImage library="sh" name="img/update.png" />
+                        </p:commandLink>
+                        <p:commandLink styleClass=""
+                                       title="Edycja"
+                                       action="#{allegroController.select(account.id)}"
+                                       update="@([id$=newItemDialogDisplay])"
+                                       oncomplete="PF('newItemDialogW').show();">
+                            <h:graphicImage library="sh" name="img/edit.png" />
+                        </p:commandLink>
+                        <p:commandLink styleClass=""
+                                       title="Usuń"
+                                       action="#{allegroController.select(account.id)}"
+                                       update="@([id$=display])"
+                                       oncomplete="PF('deleteDialogW').show();">
+                            <h:graphicImage library="sh" name="img/delete.png" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+
+                <p:dialog id="deleteDialog"
+                          widgetVar="deleteDialogW"
+                          header="Usuń"
+                          modal="true"
+                          resizable="false"
+                          minHeight="200"
+                          appendTo="@(body)"
+                          width="400">
+                    <h:panelGrid columns="3" id="display" columnClasses="alignTop,alignTop,alignTop"
+                                 style="display: block;width: 270px; border: 0px black solid;">
+                        <h:outputLabel value="Czy usunąć '" />
+                        <h:outputLabel value="#{allegroController.selected.name}" />
+                        <h:outputLabel value="'?" />
+                    </h:panelGrid>
+                    <p:separator />
+                    <p:commandButton value="OK"
+                                     actionListener="#{allegroController.delete}"
+                                     partialSubmit="true"
+                                     ajax="true"
+                                     oncomplete="PF('deleteDialogW').hide();"
+                                     process="@this"
+                                     style="display: inline; margin: 0 auto 10px; width: 100px;"
+                                     update="@([id$=mainTable])" />
+                </p:dialog>
+            </h:form>
+            <p:dialog id="newItemDialog"
+                      widgetVar="newItemDialogW"
+                      header="Dodaj"
+                      modal="true"
+                      resizable="false"
+                      minHeight="200"
+                      appendTo="@(body)"
+                      width="400">
+                <h:form >
+                    <h:panelGrid columns="2" id="newItemDialogDisplay" columnClasses="alignTop,alignTop"
+                                 style="display: block;width: 270px; border: 0px black solid;">
+
+                        <h:outputLabel for="name"  value="name: " />
+                        <p:inputText id="name"
+                                     style="width: 100%"
+                                     required="true"
+                                     requiredMessage="Pole jest wymagane."
+                                     value="#{allegroController.selected.name}"
+                                     label="name" >
+                            <p:ajax event="blur" update="nameMsg" />
+                        </p:inputText>
+                        <h:outputText  />
+                        <p:message for="name" id="nameMsg" />
+
+
+
+                    </h:panelGrid>
+                    <p:separator />
+                    <p:commandButton value="OK"
+                                     actionListener="#{allegroController.save}"
+                                     partialSubmit="true"
+                                     ajax="true"
+                                     oncomplete="PF('newItemDialogW').hide();"
+                                     process="@this"
+                                     style="display: inline; margin: 0 auto 10px; width: 100px;"
+                                     update="@([id$=mainTable]) @([id$=growl]) "/>
+                </h:form>
+            </p:dialog>
+        </ui:composition>
+    </ui:define>
+</ui:composition>

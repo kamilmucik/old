@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: storesync3
+
+server:
+  port: 8080
+
+forceApiMock: @pl.estrix.forceApiMock@
